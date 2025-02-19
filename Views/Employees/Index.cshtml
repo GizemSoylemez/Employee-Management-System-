@@ -1,0 +1,116 @@
+﻿@model IEnumerable<EMS.Models.Employee>
+@{
+    ViewData["Title"] = "Çalışanlar";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Çalışanlar</h1>
+    <div>
+        <a asp-action="Create" class="btn btn-primary">Yeni Çalışan</a>
+        <a asp-controller="Departments" asp-action="Index" class="btn btn-outline-secondary">
+            Departmanları Yönet
+        </a>
+    </div>
+</div>
+
+@* Filtreleme *@
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" asp-action="Index" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Departman</label>
+                <select name="departmentId" class="form-select">
+                    <option value="">Tümü</option>
+                    @foreach (var dept in ViewBag.Departments)
+                    {
+                        <option value="@dept.Value" 
+                            selected="@(dept.Value == Context.Request.Query["departmentId"].ToString())">
+                            @dept.Text
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">İşe Başlama Tarihi</label>
+                <div class="input-group">
+                    <input type="date" name="hireDateStart" class="form-control" 
+                           value="@Context.Request.Query["hireDateStart"]" />
+                    <span class="input-group-text">-</span>
+                    <input type="date" name="hireDateEnd" class="form-control" 
+                           value="@Context.Request.Query["hireDateEnd"]" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Maaş Aralığı</label>
+                <div class="input-group">
+                    <input type="number" name="minSalary" class="form-control" placeholder="Min" 
+                           value="@Context.Request.Query["minSalary"]" />
+                    <span class="input-group-text">-</span>
+                    <input type="number" name="maxSalary" class="form-control" placeholder="Max" 
+                           value="@Context.Request.Query["maxSalary"]" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Sıralama</label>
+                <select name="sortBy" class="form-select">
+                    <option value="">Varsayılan</option>
+                    <option value="Name" selected="@(Context.Request.Query["sortBy"] == "Name")">
+                        İsme Göre
+                    </option>
+                    <option value="HireDate" selected="@(Context.Request.Query["sortBy"] == "HireDate")">
+                        İşe Başlama Tarihine Göre
+                    </option>
+                    <option value="Salary" selected="@(Context.Request.Query["sortBy"] == "Salary")">
+                        Maaşa Göre
+                    </option>
+                </select>
+            </div>
+            
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Ara</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().FullName)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Email)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().PhoneNumber)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Department)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().HireDate)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Salary)</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.FullName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                <td>@Html.DisplayFor(modelItem => item.PhoneNumber)</td>
+                <td>
+                    <a asp-controller="Departments" asp-action="Details" 
+                       asp-route-id="@item.DepartmentId">
+                        @Html.DisplayFor(modelItem => item.Department.Name)
+                    </a>
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.HireDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.Salary)</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a asp-action="Edit" asp-route-id="@item.Id" 
+                           class="btn btn-sm btn-primary">Düzenle</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" 
+                           class="btn btn-sm btn-info">Detaylar</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" 
+                           class="btn btn-sm btn-danger">Sil</a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
